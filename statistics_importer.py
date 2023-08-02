@@ -1,4 +1,5 @@
-__version__ = '2.0.1'
+__version__ = '2.0.2'
+# TODO: modify db query to get TEMPO color then adjust price cost
 
 import aiohttp
 import argparse
@@ -61,6 +62,7 @@ class TariffType(Enum):
 class PlanType(Enum):
     BASE = "BASE"
     HCHP = "HC/HP"
+    TEMPO = "TEMPO"
 
 
 TariffsPrices = Dict[TariffType, float]
@@ -103,6 +105,17 @@ class PlanHCHP(Plan):
             }
         })
 
+class PlanTEMPO(Plan):
+    def __init__(self, HC_consumption_price: float, HP_consumption_price: float, production_price: float) -> None:
+        super().__init__("TEMPO", {
+            ElectricityType.CONSUMPTION: {
+                TariffType.HC: HC_consumption_price,
+                TariffType.HP: HP_consumption_price,
+            },
+            ElectricityType.PRODUCTION: {
+                TariffType.BASE: production_price
+            }
+        })
 
 StatisticData = Dict[str, Any]
 
@@ -149,6 +162,10 @@ def create_plan_from_med_config(usage_point_config: Dict[str, str]):
         plan = PlanBase(to_float(usage_point_config["consumption_price_base"]),
                         to_float(usage_point_config["production_price"]))
     elif plan_type == PlanType.HCHP:
+        plan = PlanHCHP(to_float(usage_point_config["consumption_price_hc"]),
+                        to_float(usage_point_config["consumption_price_hp"]),
+                        to_float(usage_point_config["production_price"]))
+    elif plan_type == PlanType.TEMPO:
         plan = PlanHCHP(to_float(usage_point_config["consumption_price_hc"]),
                         to_float(usage_point_config["consumption_price_hp"]),
                         to_float(usage_point_config["production_price"]))
