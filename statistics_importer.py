@@ -62,7 +62,7 @@ class TariffType(Enum):
 class PlanType(Enum):
     BASE = "BASE"
     HCHP = "HC/HP"
-    TEMPO = "TEMPO"
+    TEMPO = "Tempo"
 
 
 TariffsPrices = Dict[TariffType, float]
@@ -107,7 +107,7 @@ class PlanHCHP(Plan):
 
 class PlanTEMPO(Plan):
     def __init__(self, HC_consumption_price: float, HP_consumption_price: float, production_price: float) -> None:
-        super().__init__("TEMPO", {
+        super().__init__("Tempo", {
             ElectricityType.CONSUMPTION: {
                 TariffType.HC: HC_consumption_price,
                 TariffType.HP: HP_consumption_price,
